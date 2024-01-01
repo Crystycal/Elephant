@@ -1,0 +1,121 @@
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(WorldApp());
+}
+
+class WorldApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'World',
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // A list of animal face images
+  final List<String> images = [
+    'assets/cat.png',
+    'assets/dog.png',
+    'assets/fox.png',
+    'assets/monkey.png',
+    'assets/panda.png',
+  ];
+
+  // A random number generator
+  final Random random = Random();
+
+  // A variable to store the current image index
+  int imageIndex = 0;
+
+  // A variable to store the current button position
+  Offset buttonPosition = Offset(0, 0);
+
+  // A method to generate a random image index
+  void randomizeImage() {
+    setState(() {
+      imageIndex = random.nextInt(images.length);
+    });
+  }
+
+  // A method to generate a random button position
+  void randomizePosition() {
+    setState(() {
+      // Get the screen size
+      final Size screenSize = MediaQuery.of(context).size;
+
+      // Get the button size
+      final double buttonSize = 100;
+
+      // Generate a random x coordinate between 0 and screen width - button size
+      final double x = random.nextDouble() * (screenSize.width - buttonSize);
+
+      // Generate a random y coordinate between 0 and screen height - button size
+      final double y = random.nextDouble() * (screenSize.height - buttonSize);
+
+      // Set the button position
+      buttonPosition = Offset(x, y);
+    });
+  }
+
+  // A method to handle the button tap
+  void onTap() {
+    // Randomize the image
+    randomizeImage();
+
+    // Randomize the position
+    randomizePosition();
+
+    // Close the app after 3 seconds
+    Future.delayed(Duration(seconds: 3), () {
+      // Exit the app
+      Navigator.of(context).pop();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the image and position
+    randomizeImage();
+    randomizePosition();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // A button with an animal face image
+          Positioned(
+            left: buttonPosition.dx,
+            top: buttonPosition.dy,
+            child: GestureDetector(
+              onTap: onTap,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage(images[imageIndex]),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
